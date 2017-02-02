@@ -3,6 +3,7 @@
 API made using PHP to work with FileMaker databases using AJAX calls.
 
 __Settings Table__
+
 | color    | position  | size   |
 | -------- |:---------:| ------:|
 | red      |           | 3      |
