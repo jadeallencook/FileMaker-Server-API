@@ -8,6 +8,7 @@ __Settings Table__
 | -------- |:---------:| ------:|
 | red      |           | 3      |
 
+__AJAX Call__
 ```js
 $.ajax({
     url: 'api.php',
