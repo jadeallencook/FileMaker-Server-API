@@ -1,4 +1,6 @@
 <?php
+    // use output buffering to capture any errors or extraneous output
+    ob_start();
 
     // get layout from ajax
     $layoutName = $_POST['layout'];
@@ -40,8 +42,10 @@
             $json->$fields[$i] = $record->getField($fields[$i], 0);
         }
     }
+    
+    // end buffering, discarding buffer
+    ob_end_clean();
 
     // return json {}
     echo json_encode($json);
-
-?>
+    exit;
