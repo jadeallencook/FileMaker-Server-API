@@ -3,10 +3,8 @@
     // get layout from ajax
     $layoutName = $_POST['layout'];
 
-    // require fm libs
-    require_once('../fmview.php');
+    // require fm lib
     require_once('../FileMaker.php');
-    require_once('../error.php');
 
     // cache database auth
     $database = '';
