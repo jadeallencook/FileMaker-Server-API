@@ -1,4 +1,6 @@
 <?php
+    // use output buffering to capture any errors or extraneous output
+    ob_start();
 
     // require fm libs
     require_once('../fmview.php');
@@ -101,4 +103,7 @@
         // return json {}
         echo json_encode($json);
     }
+
+    exit;
+
 ?>
