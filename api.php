@@ -28,6 +28,50 @@
     // save functionality
     if (isset($_POST['save'])) {
         
+        // for adding to specific id
+        if (isset($_POST['find']) && isset($_POST['id'])) {
+            // cache needed info
+            $field_name = $_POST['find'];
+            
+            // start the search 
+            $request = $fm->newFindCommand($layoutName);
+            $request->setLogicalOperator(FILEMAKER_FIND_OR);
+            $request->addFindCriterion($field_name, '==' . $_POST['id']);
+            $result = $request->execute();
+            
+            // test for errors
+            if (FileMaker :: isError($result)) {
+                $found = false;
+            } else if ($result === NULL) {
+                $found = true;
+            }
+            
+        } else { // for adding new record to end
+            $found = true;
+        }
+        
+        // save data to id 
+        if ($found === true) {
+            // starting to save data
+            $editRecord = $fm->newEditCommand($layoutName, $recid);
+            $fd = "Tx_Level_Selected_Down_Payment";
+
+            $editRecord->setField($fd, $_POST['down']);
+            $fd = "Tx_Level_Selected_Monthly_Payment"; 
+
+            $editRecord->setField($fd, $_POST['monthly']);
+            $editRecord->setField('Tx_Level_Selected_Number', $_POST['pkgNumber']);
+            $editRecord->setField('Tx_Level_Selected_Options', $checks);
+
+            $result = $editRecord->execute();
+        }
+		
+		// check if save was a success
+		if (FileMaker::isError( $result )) {
+			echo false;
+		} else {
+			echo true;
+		}
         
     } else { // get info functionality
         
