@@ -58,3 +58,31 @@ __Results__
     age: 27
 }
 ```
+
+__Adding New Row__
+```js
+$.ajax({
+    url: 'api.php',
+    method: 'post',
+    data: {
+        save: true
+    },
+    success: function (save) {
+        console.log(save);
+    }
+});
+```
+
+__Updating Row By ID__
+```js
+$.ajax({
+    url: 'api.php',
+    method: 'post',
+    data: {
+        save: true
+    },
+    success: function (save) {
+        console.log(save);
+    }
+});
+```
