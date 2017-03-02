@@ -2,22 +2,25 @@
 
 API made using PHP to work with FileMaker databases using AJAX calls.
 
-__Settings Table__
+__'Users' Table__
 
-| color    | position  | size   |
+| id       | name      | age    |
 | -------- |:---------:| ------:|
-| red      |           | 3      |
+| 110      | Jade      | 20     |
+| 111      |           | 22     |
+| 112      | Jay       | 27     |
 
-__AJAX Call__
+
+__First Row__
 ```js
 $.ajax({
     url: 'api.php',
     method: 'post',
     data: {
-        layout: 'settings'
+        layout: 'Users'
     },
-    success: function (settings) {
-        console.log(settings);
+    success: function (user) {
+        console.log(user);
     }
 });
 ```
@@ -25,8 +28,33 @@ $.ajax({
 __Results__
 ```js
 {
-    color: 'red',
-    position: null,
-    size: 3
+    id: 110,
+    name: 'Jade',
+    age: 20
+}
+```
+
+__Row By ID__
+```js
+$.ajax({
+    url: 'api.php',
+    method: 'post',
+    data: {
+        find: 'id',
+        id: 112,
+        layout: 'Users'
+    },
+    success: function (user) {
+        console.log(user);
+    }
+});
+```
+
+__Results__
+```js
+{
+    id: 112,
+    name: 'Jay',
+    age: 27
 }
 ```
