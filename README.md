@@ -12,7 +12,9 @@ __'Users' Table__
 
 
 __First Row__
+
 _Return the first row of a table by just passing the API the layout name._
+
 ```js
 $.ajax({
     url: 'api.php',
@@ -36,7 +38,9 @@ __Results__
 ```
 
 __Row By ID__
+
 _You can return a row that is equal to an ID by passing it both the ID and what field to find it in._
+
 ```js
 $.ajax({
     url: 'api.php',
@@ -62,7 +66,9 @@ __Results__
 ```
 
 __Adding New Row__
+
 _Add a new row of information to the end of any layout._
+
 ```js
 $.ajax({
     url: 'api.php',
@@ -70,6 +76,7 @@ $.ajax({
     data: {
         save: true
         data: {
+            layout: 'Users',
             id: 113,
             name: 'Josh',
             age: 25
@@ -82,12 +89,15 @@ $.ajax({
 ```
 
 __Updating Row By ID__
+
 _Update a certain entry by passing the API the row and ID to update along with the data._
+
 ```js
 $.ajax({
     url: 'api.php',
     method: 'post',
     data: {
+        layout: 'Users',
         save: true,
         find: 'id',
         id: 111,
