@@ -2,10 +2,11 @@
     // use output buffering to capture any errors or extraneous output
     ob_start();
 
+    // need to know what layout
+    $layoutName = $_POST['layout'];
+
     // require fm libs
-    require_once('../fmview.php');
     require_once('../FileMaker.php');
-    require_once('../error.php');
 
     // cache database auth
     $database = '';
@@ -13,7 +14,7 @@
     $password = '';
 
     // create new fm connection
-    $fm = & new FileMaker();
+    $fm = new FileMaker();
     $fm->setProperty('database', $database);
     $fm->setProperty('username', $username);
     $fm->setProperty('password', $password);
@@ -28,50 +29,72 @@
     // save functionality
     if (isset($_POST['save'])) {
         
+        // cache all fields 
+        $fields = $layout->listFields();
+        
+        // process msg
+        echo "SAVE: Starting the save process";
+        
         // for adding to specific id
         if (isset($_POST['find']) && isset($_POST['id'])) {
             // cache needed info
-            $field_name = $_POST['find'];
+            $findFieldName = $_POST['find'];
+            $findId = $_POST['id'];
             
-            // start the search 
+            // find the record
             $request = $fm->newFindCommand($layoutName);
-            $request->setLogicalOperator(FILEMAKER_FIND_OR);
-            $request->addFindCriterion($field_name, '==' . $_POST['id']);
-            $result = $request->execute();
+            $request->setLogicalOperator(FILEMAKER_FIND_AND);
+            $request->addFindCriterion($findFieldName, '==' . $findId);
+            $findRecord = $request->execute();
+            $records = $findRecord->getRecords();
+            $recid = $records[0]->getRecordId();
             
-            // test for errors
-            if (FileMaker :: isError($result)) {
-                $found = false;
-            } else if ($result === NULL) {
-                $found = true;
-            }
+            // exit if no record found
+            if (!isset($recid)) exit;
             
-        } else { // for adding new record to end
-            $found = true;
+            // assign the record object
+            $record = $fm->getRecordById($layoutName, $recid);
+            
+            // process msg
+            echo "\nRECORD: Existing record found " . $recid;
+            
+        } else {
+            // process msg
+            echo "\nRECORD: Adding a new record";
+            
+            // create new record
+            $record =& $fm->newAddCommand($layoutName);
         }
         
-        // save data to id 
-        if ($found === true) {
-            // starting to save data
-            $editRecord = $fm->newEditCommand($layoutName, $recid);
-            $fd = "Tx_Level_Selected_Down_Payment";
+        // iterate over all the key/values
+        foreach ($_POST['data'] as $keyValuePair) {
 
-            $editRecord->setField($fd, $_POST['down']);
-            $fd = "Tx_Level_Selected_Monthly_Payment"; 
-
-            $editRecord->setField($fd, $_POST['monthly']);
-            $editRecord->setField('Tx_Level_Selected_Number', $_POST['pkgNumber']);
-            $editRecord->setField('Tx_Level_Selected_Options', $checks);
-
-            $result = $editRecord->execute();
+            // cache keys and values 
+            $key = $keyValuePair[0];
+            $value = $keyValuePair[1];
+            
+            // make sure the field exists
+            if (in_array($key, $fields)) {
+                // set key/value pair
+                $record->setField($key, $value); 
+            } else {
+                // process msg
+                echo "\nERROR: The " . $key . " was not found in the fields";
+            }
         }
-		
-		// check if save was a success
-		if (FileMaker::isError( $result )) {
-			echo false;
-		} else {
-			echo true;
-		}
+        
+        // commit new record
+        if (isset($_POST['find']) && isset($_POST['id'])) $result = $record->commit();
+        else $result = $record->execute();
+        
+        // error reporting
+        if (FileMaker :: isError($result)) {
+            // process msg
+            echo "\nFAIL: Could not add new record to database.";
+        }
+        
+        // final exit
+        exit;
         
     } else { // get info functionality
         
@@ -111,7 +134,6 @@
                 $records = $result->getRecords();
                 $recid = $records[0]->getRecordId();
                 $record = $fm->getRecordById($layoutName, $recid);
-                ExitOnError($record);
                 // iterate over all fields
                 for ($i = 0; $i < count($fields); ++$i) {
                     // set nonset fields for null
@@ -148,6 +170,7 @@
         echo json_encode($json);
     }
 
+    // final exit process
     exit;
 
 ?>
